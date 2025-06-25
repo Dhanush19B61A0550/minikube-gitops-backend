@@ -21,6 +21,8 @@ public class ClientDetails {
     @Column(name = "schema_name")
     private String schemaName;
     private String email;
+    private String country;
+    private String serverUrl;
 
 //    private boolean task=false;
 //    private boolean organizationChart=false;

@@ -54,11 +54,11 @@ public class EmployeeManagerServiceImpl implements EmployeeManagerService {
          String text="Dear " + employeeManagerDTO.getFirstName() + " " + employeeManagerDTO.getLastName() +
                  ",\nPlease open this link: https://company-product-frontend.azurewebsites.net/" + company + "/login";
 
-      SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(employeeManagerDTO.getEmail());
-        message.setSubject("Talentflow registration");
-        message.setText(text);
-        emailSender.send(message);
+//      SimpleMailMessage message = new SimpleMailMessage();
+//        message.setTo(employeeManagerDTO.getEmail());
+//        message.setSubject("Talentflow registration");
+//        message.setText(text);
+//        emailSender.send(message);
 
         return empDto;
     }

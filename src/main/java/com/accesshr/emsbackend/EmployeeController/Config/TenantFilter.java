@@ -20,8 +20,12 @@ public class TenantFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
         String tenantId = request.getHeader("X-Tenant-ID");
+        String country = request.getHeader("X-Country");
         if (tenantId != null && !tenantId.isEmpty()) {
             TenantContext.setTenantId(tenantId);
+        }
+        if(country!=null && !country.isEmpty()){
+            TenantContext.setCountry(country);
         }
         try {
             filterChain.doFilter(request, response);
