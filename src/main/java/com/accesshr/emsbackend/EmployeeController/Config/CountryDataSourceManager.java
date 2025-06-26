@@ -15,8 +15,8 @@ public class CountryDataSourceManager {
 
     @PostConstruct
     public void init() {
-        dataSources.put("UK", createDataSource("talent-flow-server-uk.mysql.database.azure.com", "mtl", "mtl@123456"));
-        dataSources.put("INDIA", createDataSource("talent-flow-server-db-server.mysql.database.azure.com", "mtl", "mtl@123456"));
+        dataSources.put("UK", createDataSource("java-backend-460409:us-central1:multitenant-db", "root", "Dhanush@123456"));
+        dataSources.put("INDIA", createDataSource("java-backend-460409:us-central1:multitenant-db", "root", "Dhanush@123456"));
     }
 
     private DataSource createDataSource(String url, String username, String password) {

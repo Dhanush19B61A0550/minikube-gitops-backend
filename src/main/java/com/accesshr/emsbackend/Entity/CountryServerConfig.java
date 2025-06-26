@@ -2,8 +2,8 @@ package com.accesshr.emsbackend.Entity;
 
 public enum CountryServerConfig {
 
-    UK("talent-flow-server-uk.mysql.database.azure.com", "mtl", "mtl@123456"),
-    INDIA("talent-flow-server-db-server.mysql.database.azure.com", "mtl", "mtl@123456");
+    UK("java-backend-460409:us-central1:multitenant-db", "root", "Dhanush@123456"),
+    INDIA("java-backend-460409:us-central1:multitenant-db", "root", "Dhanush@123456");
 
     private final String serverUrl;
     private final String dbUsername;
