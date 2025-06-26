@@ -10,7 +10,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/**") // Adjust the mapping as needed
-                .allowedOrigins("http://localhost:3000","https://company-product-frontend.azurewebsites.net", "http://localhost:5173") // Your frontend URL
+                .allowedOrigins("http://localhost:3000","https://fine-entry-459905-s5.uc.r.appspot.com", "http://localhost:5173") // Your frontend URL
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Allowed methods
                 .allowedHeaders("*") // Allow all headers
                 .allowCredentials(true); // Allow credentials (cookies, authorization headers, etc.)
