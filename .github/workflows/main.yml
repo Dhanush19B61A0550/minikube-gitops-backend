@@ -27,16 +27,15 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Install GKE Auth Plugin
+      - name: Install Google Cloud SDK and Auth Plugin
         run: |
+          sudo apt-get update
+          sudo apt-get install -y apt-transport-https ca-certificates gnupg curl
           sudo mkdir -p /usr/share/keyrings
-          curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo tee /usr/share/keyrings/cloud.google.gpg >/dev/null
+          curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg
           echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | sudo tee /etc/apt/sources.list.d/google-cloud-sdk.list
           sudo apt-get update
           sudo apt-get install -y google-cloud-sdk google-cloud-sdk-gke-gcloud-auth-plugin
-
-      - name: Build JAR with Maven (skip tests)
-        run: mvn clean package -DskipTests
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
@@ -45,6 +44,9 @@ jobs:
 
       - name: Configure Docker to use GCR
         run: gcloud auth configure-docker
+
+      - name: Build JAR with Maven (skip tests)
+        run: mvn clean package -DskipTests
 
       - name: Build Docker image
         run: docker build -t gcr.io/$PROJECT_ID/java-backend:$GITHUB_SHA .
