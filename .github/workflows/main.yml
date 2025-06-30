@@ -25,15 +25,11 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Show workspace contents
+      - name: Show workspace contents (debug)
         run: ls -R
 
-      - name: Make all mvnw scripts executable
-        run: chmod +x $(find . -name mvnw)
-
-      - name: Build JAR
-        run: |
-          ./mvnw clean package || $(find . -name mvnw) clean package
+      - name: Build JAR with Maven
+        run: mvn clean package
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
@@ -52,7 +48,7 @@ jobs:
       - name: Get GKE credentials
         run: gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $PROJECT_ID
 
-      - name: Set image in Kubernetes manifest
+      - name: Update image in Kubernetes manifest
         run: sed -i "s|IMAGE_PLACEHOLDER|gcr.io/$PROJECT_ID/java-backend:$GITHUB_SHA|" k8s/deployment.yaml
 
       - name: Apply Kubernetes manifests
