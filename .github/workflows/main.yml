@@ -16,44 +16,57 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1️⃣ Check out the code from the repository
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # 2️⃣ Set up Java (Temurin JDK 17)
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Show workspace contents (debug)
+      # 3️⃣ (Optional) Debug - show files in workspace
+      - name: Show workspace contents
         run: ls -R
 
-      - name: Build JAR with Maven (skip tests)
+      # 4️⃣ Build the JAR with Maven (skip tests for faster build)
+      - name: Build JAR with Maven
         run: mvn clean package -DskipTests
 
+      # 5️⃣ Authenticate to Google Cloud using Service Account Key
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.GCP_SA_KEY }}'
 
+      # 6️⃣ Configure Docker to use Google Container Registry
       - name: Configure Docker to use GCR
         run: gcloud auth configure-docker
 
+      # 7️⃣ Build the Docker image
       - name: Build Docker image
         run: docker build -t gcr.io/$PROJECT_ID/java-backend:$GITHUB_SHA .
 
+      # 8️⃣ Push the Docker image to GCR
       - name: Push Docker image
         run: docker push gcr.io/$PROJECT_ID/java-backend:$GITHUB_SHA
 
+      # 9️⃣ Fetch credentials to access GKE cluster
       - name: Get GKE credentials
         run: gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $PROJECT_ID
 
+      # 🔟 Update Kubernetes manifest with new image tag
       - name: Update image in Kubernetes manifest
         run: sed -i "s|IMAGE_PLACEHOLDER|gcr.io/$PROJECT_ID/java-backend:$GITHUB_SHA|" k8s/deployment.yaml
 
+      # 11️⃣ Apply Kubernetes manifests
+      # 👇 IMPORTANT: USE_GKE_GCLOUD_AUTH_PLUGIN is REQUIRED on GitHub runners
       - name: Apply Kubernetes manifests
         env:
           USE_GKE_GCLOUD_AUTH_PLUGIN: True
         run: |
           kubectl apply -f k8s/deployment.yaml
           kubectl apply -f k8s/service.yaml
+
