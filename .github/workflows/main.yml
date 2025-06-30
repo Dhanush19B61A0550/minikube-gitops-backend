@@ -25,11 +25,15 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Make mvnw executable
-        run: chmod +x ./mvnw
+      - name: Show workspace contents
+        run: ls -R
+
+      - name: Make all mvnw scripts executable
+        run: chmod +x $(find . -name mvnw)
 
       - name: Build JAR
-        run: ./mvnw clean package
+        run: |
+          ./mvnw clean package || $(find . -name mvnw) clean package
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
