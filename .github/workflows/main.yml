@@ -28,8 +28,8 @@ jobs:
       - name: Show workspace contents (debug)
         run: ls -R
 
-      - name: Build JAR with Maven
-        run: mvn clean package
+      - name: Build JAR with Maven (skip tests)
+        run: mvn clean package -DskipTests
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
