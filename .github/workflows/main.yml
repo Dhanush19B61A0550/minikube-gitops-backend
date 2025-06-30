@@ -52,7 +52,8 @@ jobs:
         run: sed -i "s|IMAGE_PLACEHOLDER|gcr.io/$PROJECT_ID/java-backend:$GITHUB_SHA|" k8s/deployment.yaml
 
       - name: Apply Kubernetes manifests
+        env:
+          USE_GKE_GCLOUD_AUTH_PLUGIN: True
         run: |
           kubectl apply -f k8s/deployment.yaml
           kubectl apply -f k8s/service.yaml
-#xgfcgfcv vf
