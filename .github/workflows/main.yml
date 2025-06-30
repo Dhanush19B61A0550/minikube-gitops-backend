@@ -1,43 +1,59 @@
-name: Deploy to GCP App Engine
+name: Build and Deploy to GKE
 
 on:
   push:
     branches:
       - main
 
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT }}
+  GKE_CLUSTER: ${{ secrets.GKE_CLUSTER }}
+  GKE_ZONE: ${{ secrets.GKE_ZONE }}
+  DEPLOYMENT_NAME: java-backend
+
 jobs:
-  deploy:
+  build-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
+      - name: Set up JDK
+        uses: actions/setup-java@v4
         with:
-          java-version: '17'
           distribution: 'temurin'
+          java-version: '17'
 
-      - name: Build with Maven
-        run: mvn clean package -DskipTests
+      - name: Build JAR
+        run: |
+          ./mvnw clean package
 
-      - name: Move JAR to root
-        run: cp target/ems-backend-0.0.1-SNAPSHOT.jar .
-
-      - name: List files before deploy
-        run: ls -al
-
-      - name: Authenticate with GCP
+      - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
-          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
 
-      - name: Deploy to App Engine
-        uses: google-github-actions/deploy-appengine@v2
-        with:
-          deliverables: ./app.yaml
-          project_id: java-backend-460409
-          promote: true
-          flags: '--quiet'
-#jnpp
+      - name: Configure Docker to use GCR
+        run: gcloud auth configure-docker
+
+      - name: Build Docker image
+        run: |
+          docker build -t gcr.io/$PROJECT_ID/java-backend:$GITHUB_SHA .
+
+      - name: Push Docker image
+        run: |
+          docker push gcr.io/$PROJECT_ID/java-backend:$GITHUB_SHA
+
+      - name: Get GKE credentials
+        run: |
+          gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $PROJECT_ID
+
+      - name: Set image in Kubernetes manifest
+        run: |
+          sed -i "s|IMAGE_PLACEHOLDER|gcr.io/$PROJECT_ID/java-backend:$GITHUB_SHA|" k8s/deployment.yaml
+
+      - name: Apply Kubernetes manifests
+        run: |
+          kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/service.yaml

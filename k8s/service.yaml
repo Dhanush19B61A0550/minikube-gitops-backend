@@ -1,0 +1,12 @@
+# service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: java-backend-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: java-backend
+  ports:
+    - port: 80
+      targetPort: 8080
