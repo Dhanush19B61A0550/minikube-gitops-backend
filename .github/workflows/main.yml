@@ -25,9 +25,11 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Make mvnw executable
+        run: chmod +x ./mvnw
+
       - name: Build JAR
-        run: |
-          ./mvnw clean package
+        run: ./mvnw clean package
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
@@ -38,23 +40,18 @@ jobs:
         run: gcloud auth configure-docker
 
       - name: Build Docker image
-        run: |
-          docker build -t gcr.io/$PROJECT_ID/java-backend:$GITHUB_SHA .
+        run: docker build -t gcr.io/$PROJECT_ID/java-backend:$GITHUB_SHA .
 
       - name: Push Docker image
-        run: |
-          docker push gcr.io/$PROJECT_ID/java-backend:$GITHUB_SHA
+        run: docker push gcr.io/$PROJECT_ID/java-backend:$GITHUB_SHA
 
       - name: Get GKE credentials
-        run: |
-          gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $PROJECT_ID
+        run: gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $PROJECT_ID
 
       - name: Set image in Kubernetes manifest
-        run: |
-          sed -i "s|IMAGE_PLACEHOLDER|gcr.io/$PROJECT_ID/java-backend:$GITHUB_SHA|" k8s/deployment.yaml
+        run: sed -i "s|IMAGE_PLACEHOLDER|gcr.io/$PROJECT_ID/java-backend:$GITHUB_SHA|" k8s/deployment.yaml
 
       - name: Apply Kubernetes manifests
         run: |
           kubectl apply -f k8s/deployment.yaml
           kubectl apply -f k8s/service.yaml
-#vvgwsvs
