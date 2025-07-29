@@ -134,11 +134,22 @@ public class TenantSchemaService {
 
     private void createTablesInPublicSchema(String schemaName, CountryServerConfig config) {
         Map<String, Object> settings = new HashMap<>();
+//        settings.put("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
+//        settings.put("hibernate.connection.url", "jdbc:mysql://" + config.getServerUrl() + ":3306/" + schemaName);
+//        settings.put("hibernate.connection.username", config.getDbUsername());
+//        settings.put("hibernate.connection.password", config.getDbPassword());
+//        settings.put("hibernate.hbm2ddl.auto", "create");
         settings.put("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
-        settings.put("hibernate.connection.url", "jdbc:mysql://" + config.getServerUrl() + ":3306/" + schemaName);
-        settings.put("hibernate.connection.username", config.getDbUsername());
-        settings.put("hibernate.connection.password", config.getDbPassword());
+
+        settings.put("hibernate.connection.url", "jdbc:mysql://34.46.63.45:3306/"+schemaName);
+
+        settings.put("hibernate.connection.username", "dhanush");
+
+        settings.put("hibernate.connection.password", "Dhanush@123");
+
         settings.put("hibernate.hbm2ddl.auto", "create");
+
+
         settings.put("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
 
         StandardServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
